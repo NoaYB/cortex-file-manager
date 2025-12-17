@@ -1,24 +1,64 @@
-# Python
-__pycache__/
-*.pyc
-.venv/
+#######################################
+# Secrets / Environment
+#######################################
 .env
-
-# Backend secrets
+.env.*
 backend/.env
 backend/serviceAccountKey.json
+*.key
+*.pem
+*.p12
 
-# Node / React
+#######################################
+# Python (Backend)
+#######################################
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+#######################################
+# Node / React (Frontend)
+#######################################
 node_modules/
 dist/
+build/
 .vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
+#######################################
 # Firebase
+#######################################
 .firebase/
+firebase-debug.log
+firebase-debug.*.log
 .firebaserc
 
-# IDE
+#######################################
+# IDE / Editor
+#######################################
 .idea/
+.vscode/
 
-# OS
+#######################################
+# OS files
+#######################################
 .DS_Store
+Thumbs.db
+
+#######################################
+# Local dev / temp files
+#######################################
+frontend/test.txt
+frontend/env.yaml
+
+#######################################
+# Logs / Reports
+#######################################
+*.log
+coverage/
+reports/
