@@ -75,6 +75,8 @@ export default function App() {
         setMyUid("");
         setIsAdmin(false);
         setFiles([]);
+        setMe(null);
+        setErr("");
         return;
       }
 
@@ -132,7 +134,12 @@ export default function App() {
     }
   };
 
-  const uploadFiles = async (selected: FileList) => {
+  /**
+   * IMPORTANT:
+   * Use File[] (copied) instead of FileList to avoid cases where the input is cleared
+   * and the underlying FileList becomes empty before FormData is built.
+   */
+  const uploadFiles = async (selected: File[]) => {
     setErr("");
 
     try {
@@ -144,7 +151,7 @@ export default function App() {
       const freshToken = await getFreshIdToken();
 
       const formData = new FormData();
-      Array.from(selected).forEach((f) => formData.append("files", f)); // MUST be "files"
+      selected.forEach((f) => formData.append("files", f)); // MUST be "files"
 
       const r = await fetch(`${BACKEND_URL}/upload`, {
         method: "POST",
@@ -197,33 +204,33 @@ export default function App() {
       setErr(String(e?.message ?? e));
     }
   };
-const deleteFile = async (objectName: string) => {
-  setErr("");
 
-  try {
-    const ok = confirm("Delete this file?");
-    if (!ok) return;
+  const deleteFile = async (objectName: string) => {
+    setErr("");
 
-    const pathObjectName = encodeObjectNameForPath(objectName);
-    const freshToken = await getFreshIdToken();
+    try {
+      const ok = confirm("Delete this file?");
+      if (!ok) return;
 
-    const r = await fetch(`${BACKEND_URL}/files/${pathObjectName}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${freshToken}` },
-    });
+      const pathObjectName = encodeObjectNameForPath(objectName);
+      const freshToken = await getFreshIdToken();
 
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      setErr(JSON.stringify(data, null, 2));
-      return;
+      const r = await fetch(`${BACKEND_URL}/files/${pathObjectName}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${freshToken}` },
+      });
+
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        setErr(JSON.stringify(data, null, 2));
+        return;
+      }
+
+      await fetchFiles(freshToken);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
     }
-
-    await fetchFiles(freshToken);
-  } catch (e: any) {
-    setErr(String(e?.message ?? e));
-  }
-};
-
+  };
 
   const myFiles = useMemo(() => files.filter((f) => f.uid === myUid), [files, myUid]);
   const allUsersFiles = useMemo(() => files, [files]);
@@ -251,10 +258,10 @@ const deleteFile = async (objectName: string) => {
           multiple
           disabled={!token}
           onChange={(e) => {
-            if (e.target.files) {
-              uploadFiles(e.target.files);
-              e.currentTarget.value = "";
-            }
+            // Copy to a stable array BEFORE clearing the input
+            const picked = e.target.files ? Array.from(e.target.files) : [];
+            if (picked.length > 0) uploadFiles(picked);
+            e.currentTarget.value = "";
           }}
         />
       </div>
@@ -343,18 +350,17 @@ const deleteFile = async (objectName: string) => {
 
         <ul>
           {myFiles.map((f) => (
-           <li key={f.object_name} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-  <span>{cleanName(f)}</span>
+            <li key={f.object_name} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span>{cleanName(f)}</span>
 
-  <button onClick={() => downloadFile(f.object_name, cleanName(f))} disabled={!token}>
-    Download
-  </button>
+              <button onClick={() => downloadFile(f.object_name, cleanName(f))} disabled={!token}>
+                Download
+              </button>
 
-  <button onClick={() => deleteFile(f.object_name)} disabled={!token}>
-    Delete
-  </button>
-</li>
-
+              <button onClick={() => deleteFile(f.object_name)} disabled={!token}>
+                Delete
+              </button>
+            </li>
           ))}
         </ul>
       </div>
