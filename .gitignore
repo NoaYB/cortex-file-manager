@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Backend secrets
+backend/.env
+backend/serviceAccountKey.json
+
+# Node / React
+node_modules/
+dist/
+.vite/
+
+# Firebase
+.firebase/
+.firebaserc
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
