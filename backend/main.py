@@ -43,17 +43,21 @@ ADMIN_EMAILS = {
 # ----------------------------
 app = FastAPI()
 
-allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+allowed_origins_env = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,"
+    "https://sixth-tribute-481218-f0.web.app,https://sixth-tribute-481218-f0.firebaseapp.com",
+)
+
 allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,   # חייב להיות רשימה ספציפית, לא "*"
-    allow_credentials=False,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],             # כולל Authorization
+    allow_headers=["*"],
 )
-
 
 # ----------------------------
 # Firebase initialization
@@ -225,7 +229,7 @@ def download_file(
     if not user["is_admin"] and file_uid != user["uid"]:
         raise HTTPException(status_code=403, detail="Not allowed")
 
-    #  Cloud Run: אין private key, לכן משתמשים ב-IAM Credentials כדי לחתום
+    #  Cloud Run: ××™×Ÿ private key, ×œ×›×Ÿ ×ž×©×ª×ž×©×™× ×‘-IAM Credentials ×›×“×™ ×œ×—×ª×•×
     credentials, _ = google.auth.default()
     credentials.refresh(Request())
 
