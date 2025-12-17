@@ -112,27 +112,7 @@ export default function App() {
     setErr("");
   };
 
-  const callMe = async () => {
-    setErr("");
-    setMe(null);
-    try {
-      const freshToken = await getFreshIdToken();
 
-      const r = await fetch(`${BACKEND_URL}/me`, {
-        headers: { Authorization: `Bearer ${freshToken}` },
-      });
-
-      const data = await r.json();
-      if (!r.ok) {
-        setErr(JSON.stringify(data, null, 2));
-        return;
-      }
-
-      setMe(data);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
-    }
-  };
 
   /**
    * IMPORTANT:
@@ -246,11 +226,7 @@ export default function App() {
         </button>
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <button onClick={callMe} disabled={!token}>
-          Call /me
-        </button>
-      </div>
+
 
       <div style={{ marginBottom: 16 }}>
         <input
@@ -266,10 +242,12 @@ export default function App() {
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <b>Has token?</b> {token ? "YES" : "NO"}{" "}
-        {isAdmin && <span style={{ color: "green" }}>(ADMIN)</span>}
-      </div>
+     {isAdmin && (
+  <div style={{ marginBottom: 16 }}>
+    <span style={{ color: "green", fontWeight: 700 }}>ADMIN</span>
+  </div>
+)}
+
 
       {err && <pre style={{ color: "crimson" }}>{err}</pre>}
       {me && <pre>{JSON.stringify(me, null, 2)}</pre>}
@@ -324,21 +302,7 @@ export default function App() {
             </select>
           </label>
 
-          <button
-            onClick={() => {
-              setQ("");
-              setFileType("");
-              setSortBy("date");
-              setOrder("desc");
-            }}
-            disabled={!token}
-          >
-            Reset
-          </button>
 
-          <button onClick={() => fetchFiles(token)} disabled={!token || loadingFiles}>
-            Refresh
-          </button>
         </div>
       </div>
 
