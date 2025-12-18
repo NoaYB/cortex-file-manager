@@ -63,11 +63,11 @@ Google Cloud Storage (GCS)
 
 | Role | Upload | View Own Files | Delete Own Files | View All Files | Delete Others |
 |------|--------|----------------|------------------|----------------|---------------|
-| User | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Admin | ✅ | ✅ | ✅ | ✅ (read-only) | ❌ |
+| User | V      | V              | V                | X              | X             |
+| Admin | V      | V              | V                | V (read-only)  | X             |
 
 Admins are identified by email via environment variable. Authorization is enforced server-side only.
-
+![img.png](img.png)
 ---
 
 ## API Endpoints
@@ -147,12 +147,7 @@ Delete a file. Only file owners may delete their files. Admins cannot delete fil
 - Simple object-based access model
 - Cost-effective for file storage
 
-**Object Structure**:
-```
-<bucket-name>/
-└── <uid>/
-    └── <uuid>_<original_filename>
-```
+
 
 **Benefits**:
 - Strong user isolation
@@ -264,26 +259,17 @@ Each deployment creates a new Cloud Run revision.
 **Environment variables not updating**: Deploy new Cloud Run revision after updating variables.
 
 ---
+### Secrets & Credentials
 
-## Limitations
+No sensitive credentials or API keys are committed to this repository.
 
-- No file previews
-- No file versioning
-- No soft delete
-- No rate limiting (can be added)
-
----
-
-## Future Improvements
-
-- File versioning
-- Audit logs
-- Rate limiting
-- Quota management per user
-- File metadata indexing
-- Background cleanup jobs
+- Firebase service account keys are required **only for local development**
+- Each developer should generate their own service account key in Firebase
+- The key file is excluded via `.gitignore`
+- Production authentication uses Cloud Run's default service account
 
 ---
+
 
 ## About
 
@@ -298,6 +284,10 @@ This backend was built as part of a Backend-Focused Fullstack Home Task, emphasi
 - [Main Project README](../README.md) – Complete system overview
 - [Frontend README](../frontend/README.md) – Frontend documentation
 
+---
+The Firebase service account key is not included in the repository.
+Each developer should create their own service account in Firebase
+and set the GOOGLE_APPLICATION_CREDENTIALS environment variable locally.
 ---
 
 ## License

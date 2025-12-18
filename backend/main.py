@@ -40,7 +40,7 @@ ADMIN_EMAILS = {
 
 # ----------------------------
 # App
-# ----------------------------
+
 app = FastAPI()
 
 allowed_origins_env = os.getenv(
